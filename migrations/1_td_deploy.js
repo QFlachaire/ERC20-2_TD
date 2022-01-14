@@ -1,7 +1,7 @@
 var TDErc20 = artifacts.require("ERC20TD.sol");
 var ERC20Claimable = artifacts.require("ERC20Claimable.sol");
 var evaluator = artifacts.require("Evaluator.sol");
-
+var ExerciceSolution = artifacts.require("ExerciceSolution.sol");
 
 module.exports = (deployer, network, accounts) => {
     deployer.then(async () => {
@@ -48,10 +48,18 @@ async function testDeployment(depioyer, network, accounts) {
 	getBalance = await TDToken.balanceOf(accounts[i]);
 	console.log("Init Balance " + getBalance.toString());
 
-	// Ex1
-	await ClaimableToken.claimTokens({from: accounts[i]});
-	await Evaluator.ex1_claimedPoints({from: accounts[i]});
+	// // Ex1
+	// await ClaimableToken.claimTokens({from: accounts[i]});
+	// await Evaluator.ex1_claimedPoints({from: accounts[i]});
+	// getBalance = await TDToken.balanceOf(accounts[i]);
+	// console.log("Ex1 Balance " + getBalance.toString());
+
+	// Ex2
+	Solution = await ExerciceSolution.new();
+
+	await Evaluator.submitExercice(Solution.address)
+	await Evaluator.ex2_claimedFromContract({from: accounts[i]});
 	getBalance = await TDToken.balanceOf(accounts[i]);
-	console.log("Ex1 Balance " + getBalance.toString());
+	console.log("Ex2 Balance " + getBalance.toString());
 
 }

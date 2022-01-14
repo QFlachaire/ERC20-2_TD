@@ -60,7 +60,7 @@ contract Evaluator
 	{
 		// Checking a solution was submitted
 		require(exerciceProgression[msg.sender][0], "No solution submitted");
-
+		require(false, "ouo");
 		// Checking how many tokens ExerciceSolution holds
 		uint256 solutionInitBalance = claimableERC20.balanceOf(address(studentExerciceSolution[msg.sender]));
 
