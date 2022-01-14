@@ -49,7 +49,7 @@ async function testDeployment(depioyer, network, accounts) {
 	console.log("Init Balance " + getBalance.toString());
 
 	// Ex1
-	await ERC20Claimable.claimTokens({from: accounts[i]});
+	await ClaimableToken.claimTokens({from: accounts[i]});
 	await Evaluator.ex1_claimedPoints({from: accounts[i]});
 	getBalance = await TDToken.balanceOf(accounts[i]);
 	console.log("Ex1 Balance " + getBalance.toString());
