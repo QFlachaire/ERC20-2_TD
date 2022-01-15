@@ -1,4 +1,4 @@
-pragma solidity ^0.6.0;
+pragma solidity >=0.6.0;
 pragma experimental ABIEncoderV2;
 
 import "./ERC20TD.sol";
@@ -57,15 +57,15 @@ contract Evaluator
 
 	function ex2_claimedFromContract()
 	public
-	{
+	{		
 		// Checking a solution was submitted
 		require(exerciceProgression[msg.sender][0], "No solution submitted");
-		require(false, "ouo");
+
 		// Checking how many tokens ExerciceSolution holds
 		uint256 solutionInitBalance = claimableERC20.balanceOf(address(studentExerciceSolution[msg.sender]));
-
 		// Claiming tokens through ExerciceSolution
 		studentExerciceSolution[msg.sender].claimTokensOnBehalf();
+
 
 		// Verifying ExerciceSolution holds tokens
 		uint256 solutionEndBalance = claimableERC20.balanceOf(address(studentExerciceSolution[msg.sender]));
@@ -74,7 +74,6 @@ contract Evaluator
 		// Verifying ExerciceSolution kept track of our balance
 		studentExerciceSolution[msg.sender].claimTokensOnBehalf();
 		require(studentExerciceSolution[msg.sender].tokensInCustody(address(this)) == 2*claimableERC20.distributedAmount(), "Balance of sender not kept in ExerciceSolution");
-
 
 		// Crediting points
 		if (!exerciceProgression[msg.sender][2])

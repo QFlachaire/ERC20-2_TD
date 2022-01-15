@@ -5,12 +5,12 @@ var ExerciceSolution = artifacts.require("ExerciceSolution.sol");
 
 module.exports = (deployer, network, accounts) => {
     deployer.then(async () => {
-        // await deployTDToken(deployer, network, accounts); 
-        // await deployEvaluator(deployer, network, accounts); 
-        // await setPermissionsAndRandomValues(deployer, network, accounts); 
-        // await deployRecap(deployer, network, accounts); 
+        await deployTDToken(deployer, network, accounts); 
+        await deployEvaluator(deployer, network, accounts); 
+        await setPermissionsAndRandomValues(deployer, network, accounts); 
+        await deployRecap(deployer, network, accounts); 
 
-		await hardcodeContractAddress(deployer, network, accounts)
+		//await hardcodeContractAddress(deployer, network, accounts)
 		await testDeployment(deployer, network, accounts);
     });
 };
@@ -45,19 +45,23 @@ async function hardcodeContractAddress(deployer, network, accounts) {
 async function testDeployment(depioyer, network, accounts) { 
 	i = 0;
 
+	await Evaluator.sendTransaction({from: accounts[i], value: web3.utils.toWei('0.1', 'ether')})
+	await web3.eth.sendTransaction({from:accounts[i],to:Evaluator.address, value:web3.utils.toBN(web3.utils.toWei('0.005', "ether"))});
+
 	getBalance = await TDToken.balanceOf(accounts[i]);
 	console.log("Init Balance " + getBalance.toString());
 
 	// // Ex1
-	// await ClaimableToken.claimTokens({from: accounts[i]});
-	// await Evaluator.ex1_claimedPoints({from: accounts[i]});
-	// getBalance = await TDToken.balanceOf(accounts[i]);
-	// console.log("Ex1 Balance " + getBalance.toString());
+	await ClaimableToken.claimTokens({from: accounts[i]});
+	await Evaluator.ex1_claimedPoints({from: accounts[i]});
+	getBalance = await TDToken.balanceOf(accounts[i]);
+	console.log("Ex1 Balance " + getBalance.toString());
 
+
+	Solution = await ExerciceSolution.new(ClaimableToken.address);
 	// Ex2
-	Solution = await ExerciceSolution.new();
-
 	await Evaluator.submitExercice(Solution.address)
+	console.log("ouo")
 	await Evaluator.ex2_claimedFromContract({from: accounts[i]});
 	getBalance = await TDToken.balanceOf(accounts[i]);
 	console.log("Ex2 Balance " + getBalance.toString());
