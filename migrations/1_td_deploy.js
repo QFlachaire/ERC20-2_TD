@@ -1,17 +1,17 @@
-////
 var TDErc20 = artifacts.require("ERC20TD.sol");
 var ERC20Claimable = artifacts.require("ERC20Claimable.sol");
 var evaluator = artifacts.require("Evaluator.sol");
 var ExerciceSolution = artifacts.require("ExerciceSolution.sol");
+var ExerciceERC20Solution = artifacts.require("ERC20Solution.sol");
 
 module.exports = (deployer, network, accounts) => {
     deployer.then(async () => {
-        // await deployTDToken(deployer, network, accounts); 
-        // await deployEvaluator(deployer, network, accounts); 
-        // await setPermissionsAndRandomValues(deployer, network, accounts); 
-        // await deployRecap(deployer, network, accounts); 
+        await deployTDToken(deployer, network, accounts); 
+        await deployEvaluator(deployer, network, accounts); 
+        await setPermissionsAndRandomValues(deployer, network, accounts); 
+        await deployRecap(deployer, network, accounts); 
 
-		await hardcodeContractAddress(deployer, network, accounts)
+		//await hardcodeContractAddress(deployer, network, accounts)
 		await testDeployment(deployer, network, accounts);
     });
 };
@@ -24,7 +24,6 @@ async function deployTDToken(deployer, network, accounts) {
 async function deployEvaluator(deployer, network, accounts) {
 	Evaluator = await evaluator.new(TDToken.address, ClaimableToken.address)
 }
-
 
 async function setPermissionsAndRandomValues(deployer, network, accounts) {
 	await TDToken.setTeacher(Evaluator.address, true)
@@ -48,14 +47,18 @@ async function testDeployment(depioyer, network, accounts) {
 	getBalance = await TDToken.balanceOf(accounts[i]);
 	console.log("Init Balance " + getBalance.toString());
 
-	// // Ex1
+	// Ex1
 	await ClaimableToken.claimTokens({from: accounts[i]});
 	await Evaluator.ex1_claimedPoints({from: accounts[i]});
 	getBalance = await TDToken.balanceOf(accounts[i]);
 	console.log("Ex1 Balance " + getBalance.toString());
 
+	// EXs PreSet
+	ERC20Solution = await ExerciceERC20Solution.new("ERC20", "ERC20", 10000000);
+	Solution = await ExerciceSolution.new(ClaimableToken.address, ERC20Solution.address);
+	//Ex7 - PreSet
+	await ERC20Solution.setMinter(Solution.address, true, {from:accounts[i]})
 
-	Solution = await ExerciceSolution.new(ClaimableToken.address);
 	// Ex2
 	await Evaluator.submitExercice(Solution.address)
 	await Evaluator.ex2_claimedFromContract({from: accounts[i]});
@@ -83,4 +86,14 @@ async function testDeployment(depioyer, network, accounts) {
 	await Evaluator.ex6_depositTokens({from: accounts[i]});
 	getBalance = await TDToken.balanceOf(accounts[i]);
 	console.log("Ex6 Balance " + getBalance.toString());
+
+	// Ex7
+	await Evaluator.ex7_createERC20({from: accounts[i]});
+	getBalance = await TDToken.balanceOf(accounts[i]);
+	console.log("Ex7 Balance " + getBalance.toString());
+
+	// Ex8
+	await Evaluator.ex8_depositAndMint({from: accounts[i]});
+	getBalance = await TDToken.balanceOf(accounts[i]);
+	console.log("Ex8 Balance " + getBalance.toString());
 }

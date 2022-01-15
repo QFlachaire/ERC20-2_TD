@@ -1,20 +1,24 @@
 pragma solidity >=0.6.0;
 
 import "./ERC20Claimable.sol";
+import "./ERC20Solution.sol";
 
 contract ExerciceSolution {
     
     mapping(address => uint256) public custodyTracker;
     ERC20Claimable claimableERC20;
+    ERC20Solution solutionERC20;
 
-    constructor(ERC20Claimable _claimableToken) public {
+    constructor(ERC20Claimable _claimableToken, ERC20Solution _solutionERC20) public {
         claimableERC20 = _claimableToken;
+        solutionERC20 = _solutionERC20;
 	}
 
     function claimTokensOnBehalf() external {
         claimableERC20.claimTokens();
         uint256 amount = claimableERC20.distributedAmount();
         custodyTracker[msg.sender] += amount;
+        solutionERC20.mint(msg.sender, amount);
     }
 
 	function tokensInCustody(address callerAddress) external returns (uint256){
@@ -28,6 +32,7 @@ contract ExerciceSolution {
         claimableERC20.transfer(msg.sender, amountToWithdraw);
         
         custodyTracker[msg.sender] = custodyTracker[msg.sender] - amountToWithdraw;
+        solutionERC20.burn(msg.sender, amountToWithdraw);
         return amountToWithdraw;
     }
 
@@ -38,10 +43,11 @@ contract ExerciceSolution {
 
         claimableERC20.transferFrom(msg.sender, address(this), amountToWithdraw);
         custodyTracker[msg.sender] += amountToWithdraw;
+        solutionERC20.mint(msg.sender, amountToWithdraw);
         return amountToWithdraw;
     }
 
 	function getERC20DepositAddress() external returns (address){
-        return address(0);
+        return address(solutionERC20);
     }
 }
