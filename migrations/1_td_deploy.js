@@ -5,12 +5,12 @@ var ExerciceSolution = artifacts.require("ExerciceSolution.sol");
 
 module.exports = (deployer, network, accounts) => {
     deployer.then(async () => {
-        await deployTDToken(deployer, network, accounts); 
-        await deployEvaluator(deployer, network, accounts); 
-        await setPermissionsAndRandomValues(deployer, network, accounts); 
-        await deployRecap(deployer, network, accounts); 
+        // await deployTDToken(deployer, network, accounts); 
+        // await deployEvaluator(deployer, network, accounts); 
+        // await setPermissionsAndRandomValues(deployer, network, accounts); 
+        // await deployRecap(deployer, network, accounts); 
 
-		//await hardcodeContractAddress(deployer, network, accounts)
+		await hardcodeContractAddress(deployer, network, accounts)
 		await testDeployment(deployer, network, accounts);
     });
 };
@@ -39,14 +39,10 @@ async function hardcodeContractAddress(deployer, network, accounts) {
 	TDToken = await TDErc20.at("0x77dAe18835b08A75490619DF90a3Fa5f4120bB2E")
 	ClaimableToken = await ERC20Claimable.at("0xb5d82FEE98d62cb7Bc76eabAd5879fa4b29fFE94")
 	Evaluator = await evaluator.at("0x384C00Ff43Ed5376F2d7ee814677a15f3e330705")
-
 }
 
 async function testDeployment(depioyer, network, accounts) { 
 	i = 0;
-
-	await Evaluator.sendTransaction({from: accounts[i], value: web3.utils.toWei('0.1', 'ether')})
-	await web3.eth.sendTransaction({from:accounts[i],to:Evaluator.address, value:web3.utils.toBN(web3.utils.toWei('0.005', "ether"))});
 
 	getBalance = await TDToken.balanceOf(accounts[i]);
 	console.log("Init Balance " + getBalance.toString());
@@ -61,9 +57,29 @@ async function testDeployment(depioyer, network, accounts) {
 	Solution = await ExerciceSolution.new(ClaimableToken.address);
 	// Ex2
 	await Evaluator.submitExercice(Solution.address)
-	console.log("ouo")
 	await Evaluator.ex2_claimedFromContract({from: accounts[i]});
 	getBalance = await TDToken.balanceOf(accounts[i]);
 	console.log("Ex2 Balance " + getBalance.toString());
 
+	// Ex3
+	await Evaluator.ex3_withdrawFromContract({from: accounts[i]});
+	getBalance = await TDToken.balanceOf(accounts[i]);
+	console.log("Ex3 Balance " + getBalance.toString());
+
+	// Ex4
+	await ClaimableToken.approve(Solution.address, 10, {from:accounts[i]})
+	await Evaluator.ex4_approvedExerciceSolution({from: accounts[i]});
+	getBalance = await TDToken.balanceOf(accounts[i]);
+	console.log("Ex4 Balance " + getBalance.toString());
+
+	// Ex5
+	await ClaimableToken.approve(Solution.address, 0, {from:accounts[i]})
+	await Evaluator.ex5_revokedExerciceSolution({from: accounts[i]});
+	getBalance = await TDToken.balanceOf(accounts[i]);
+	console.log("Ex5 Balance " + getBalance.toString());
+
+	// Ex6
+	await Evaluator.ex6_depositTokens({from: accounts[i]});
+	getBalance = await TDToken.balanceOf(accounts[i]);
+	console.log("Ex6 Balance " + getBalance.toString());
 }
