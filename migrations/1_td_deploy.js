@@ -1,3 +1,4 @@
+////
 var TDErc20 = artifacts.require("ERC20TD.sol");
 var ERC20Claimable = artifacts.require("ERC20Claimable.sol");
 var evaluator = artifacts.require("Evaluator.sol");
