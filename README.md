@@ -1,4 +1,5 @@
-# ERC20 102
+# ERC20 102 - M1 ESILV FinTech
+TD from the Decentralized Finance Course I followed in 2021 during my Master at ESILV in Fintech.
 
 ## Introduction
 Welcome! This is an automated workshop that will dive deeper into managing ERC20 tokens. Specifically we will look at patterns using approve() and transferFrom().
